@@ -93,6 +93,7 @@
 @if not "%ERRORS%" == "0" goto :build-one-skipped
 @if /I "%CHANNEL%"  == "beta"    echo Skipping %CHANNEL% %CONFIG% %PLATFORM%: Beta toolchain&& goto :build-one-skipped
 @if /I "%PLATFORM%" == "android" echo Skipping %CHANNEL% %CONFIG% %PLATFORM%: Build not fully configured&& goto :build-one-skipped
+@if /I "%PLATFORM%" == "linux" if defined CI echo Skipping %CHANNEL% %CONFIG% %PLATFORM%: Appveyor doesn't have WSL installed&& goto :build-one-skipped
 
 :: Parameters -> Settings
 

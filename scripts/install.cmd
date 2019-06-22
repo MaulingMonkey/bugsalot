@@ -4,8 +4,8 @@
 @if not defined CI where wsl >NUL 2>NUL && goto :cannot-auto-install-wsl
 @where rustup >NUL 2>NUL && goto :skip-install-rustup
 @where curl >NUL 2>NUL || goto :cannot-auto-install-rustup
-curl -sSf -o %TEMP%\rustup-init.exe https://win.rustup.rs
-%TEMP%\rustup-init.exe --default-toolchain stable -y
+curl -sSf -o "%TEMP%\rustup-init.exe" https://win.rustup.rs
+"%TEMP%\rustup-init.exe" --default-toolchain stable -y
 @set "PATH=%USERPROFILE%\.cargo\bin;%PATH%"
 :skip-install-rustup
 
