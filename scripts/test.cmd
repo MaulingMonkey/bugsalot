@@ -1,5 +1,6 @@
 :: Main entry point
 @setlocal
+@if defined CI echo on
 @set ERRORS=0
 @set BUILDS_LOG="%TEMP%\bugsalot-builds-list.txt"
 @echo Channel    Config     Platform   Result>%BUILDS_LOG%

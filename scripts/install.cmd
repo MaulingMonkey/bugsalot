@@ -1,5 +1,5 @@
 @setlocal
-@echo on
+@if defined CI echo on
 @set ERRORS=0
 @if not defined CI where wsl >NUL 2>NUL && goto :cannot-auto-install-wsl
 @where rustup >NUL 2>NUL && goto :skip-install-rustup
@@ -23,6 +23,9 @@ if not defined CI wsl curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs 
 if not defined CI wsl sh rustup-init.sh --default-toolchain stable -y                               || set ERRORS=1
 if not defined CI wsl rustup toolchain install stable'                                              || set ERRORS=1
 if not defined CI wsl rustup toolchain install nightly'                                             || set ERRORS=1
+@where cargo-web >NUL 2>NUL || goto :skip-install-cargo-web
+cargo install cargo-web || set ERRORS=1
+:skip-install-cargo-web
 
 @echo.
 @echo.
