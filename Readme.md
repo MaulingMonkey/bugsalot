@@ -1,6 +1,6 @@
 # bugsalot
 
-<!-- [![Build status](https://ci.appveyor.com/api/projects/status/???/master?svg=true)](https://ci.appveyor.com/project/MaulingMonkey/bugsalot) -->
+[![Build status](https://ci.appveyor.com/api/projects/status/nyvlrelifcyjc1l1?svg=true)](https://ci.appveyor.com/project/MaulingMonkey/bugsalot)
 <!-- [![Build Status](https://travis-ci.org/MaulingMonkey/bugsalot.svg)](https://travis-ci.org/MaulingMonkey/bugsalot) -->
 [![Crates.io](https://img.shields.io/crates/v/bugsalot.svg)](https://crates.io/crates/bugsalot)
 ![unsafe: yes](https://img.shields.io/badge/unsafe-yes-yellow.svg)

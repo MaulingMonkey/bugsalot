@@ -1,0 +1,9 @@
+image: Visual Studio 2019
+
+install:
+  - scripts\install.cmd
+
+build: false
+
+test_script:
+  - scripts\test.cmd
