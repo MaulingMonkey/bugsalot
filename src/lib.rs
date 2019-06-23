@@ -14,28 +14,42 @@ pub mod debugger;
 
     pub trait DebugUnwrap<O, E : fmt::Debug> {
         /// Returns (pass, fail, format_error)
-        fn get_pass_fail_strs(&self) -> (&'static str, &'static str, bool);
+        fn get_pass_fail_strs(&self) -> (&'static str, &'static str, bool, bool);
         fn can_unwrap(&self) -> bool;
         fn unwrap_ok(self) -> O;
         fn unwrap_err(self) -> E;
     }
 
     impl DebugUnwrap<bool, bool> for bool {
-        fn get_pass_fail_strs(&self) -> (&'static str, &'static str, bool) { ("true", "false", false) }
+        fn get_pass_fail_strs(&self) -> (&'static str, &'static str, bool, bool) { ("true", "false", false, false) }
         fn can_unwrap(&self) -> bool { *self }
         fn unwrap_ok(self) -> bool { false }
         fn unwrap_err(self) -> bool { false }
     }
 
+    impl<T> DebugUnwrap<*const T, *const T> for *const T {
+        fn get_pass_fail_strs(&self) -> (&'static str, &'static str, bool, bool) { ("non-null", "null", false, false) }
+        fn can_unwrap(&self) -> bool { *self != 0 as *const T }
+        fn unwrap_ok(self) -> *const T { self }
+        fn unwrap_err(self) -> *const T { self }
+    }
+
+    impl<T> DebugUnwrap<*mut T, *mut T> for *mut T {
+        fn get_pass_fail_strs(&self) -> (&'static str, &'static str, bool, bool) { ("non-null", "null", false, false) }
+        fn can_unwrap(&self) -> bool { *self != 0 as *mut T }
+        fn unwrap_ok(self) -> *mut T { self }
+        fn unwrap_err(self) -> *mut T { self }
+    }
+
     impl<T> DebugUnwrap<T,()> for Option<T> {
-        fn get_pass_fail_strs(&self) -> (&'static str, &'static str, bool) { ("Some", "None", false) }
+        fn get_pass_fail_strs(&self) -> (&'static str, &'static str, bool, bool) { ("Some", "None", true, false) }
         fn can_unwrap(&self) -> bool { self.is_some() }
         fn unwrap_ok(self) -> T { if let Some(r) = self { r } else { unreachable!() } }
         fn unwrap_err(self) -> () { assert!(self.is_none()); () }
     }
 
     impl<R,E: fmt::Debug> DebugUnwrap<R,E> for Result<R,E> {
-        fn get_pass_fail_strs(&self) -> (&'static str, &'static str, bool) { ("Ok",   "Err", true) }
+        fn get_pass_fail_strs(&self) -> (&'static str, &'static str, bool, bool) { ("Ok",   "Err", false, true) }
         fn can_unwrap(&self) -> bool { self.is_ok() }
         fn unwrap_ok(self) -> R { if let Ok(r) = self { r } else { unreachable!() } }
         fn unwrap_err(self) -> E { if let Err(e) = self { e } else { unreachable!() } }
@@ -65,20 +79,20 @@ pub mod debugger;
     }
 
     // TODO: Consider abusing const/static structs to minimize the amount of codegen we need at each call site just to initialize argument registers.
-    pub fn log_unwrap_failed<O, E: fmt::Debug, DU: DebugUnwrap<O, E>>(file: &str, line: u32, msg: &str, expr: &str, du: DU) {
-        let (pass, fail, format) = du.get_pass_fail_strs();
+    pub fn log_unwrap_failed<M: std::fmt::Display, O, E: fmt::Debug, DU: DebugUnwrap<O, E>>(file: &str, line: u32, msg: M, expr: &str, du: DU) {
+        let (pass, fail, pass_parens, fail_parens) = du.get_pass_fail_strs();
         let err = du.unwrap_err();
-        if format {
+        if fail_parens {
             output(format!(
                 concat!(
                     "{}({}): {}\r\n",
                     "    Expression: {}\r\n",
-                    "    Expected:   {}(...)\r\n",
+                    "    Expected:   {}{}\r\n",
                     "    Found:      {}({:?})\r\n\0",
                 ),
                 file, line, msg,
                 expr,
-                pass,
+                pass, if pass_parens { "(...)" } else { "" },
                 fail, MaybeDebugToDebug(&err)
             ));
         } else {
@@ -86,12 +100,12 @@ pub mod debugger;
                 concat!(
                     "{}({}): {}\r\n",
                     "    Expression: {}\r\n",
-                    "    Expected:   {}(...)\r\n",
+                    "    Expected:   {}{}\r\n",
                     "    Found:      {}\r\n\0",
                 ),
                 file, line, msg,
                 expr,
-                pass,
+                pass, if pass_parens { "(...)" } else { "" },
                 fail
             ));
         }
@@ -126,6 +140,12 @@ pub mod debugger;
 /// let _ : ()  = unwrap!(a, ());
 /// let _ : ()  = unwrap!(a);
 /// let _ : i32 = unwrap!(a, return);
+/// 
+/// let a : *const i32 = &42;
+/// let _ : i32 = unsafe { *unwrap!(a, &12) };
+/// let _ : ()  =           unwrap!(a, ());
+/// let _ : ()  =           unwrap!(a);
+/// let _ : i32 = unsafe { *unwrap!(a, return) };
 /// ```
 #[macro_export]
 macro_rules! unwrap {
@@ -189,6 +209,12 @@ macro_rules! unwrap {
 /// let _ : ()  = expect!(a, "Couldn't do something", ());
 /// let _ : ()  = expect!(a, "Couldn't do something");
 /// let _ : i32 = expect!(a, "Couldn't do something", return);
+/// 
+/// let a : *const i32 = &42;
+/// let _ : i32 = unsafe { *expect!(a, "Couldn't do something!", &12) };
+/// let _ : ()  =           expect!(a, "Couldn't do something!", ());
+/// let _ : ()  =           expect!(a,  format!("String {}", 42));
+/// let _ : i32 = unsafe { *expect!(a, &format!("String {}", 42), return) };
 /// ```
 #[macro_export]
 macro_rules! expect {
