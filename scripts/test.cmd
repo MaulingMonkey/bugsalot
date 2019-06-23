@@ -92,8 +92,8 @@
 :: Skip some builds due to earlier errors, non-bugsalot bugs, being too lazy to install the beta toolchain, etc.
 
 @if not "%ERRORS%" == "0" goto :build-one-skipped
-@if /I "%CHANNEL%"  == "beta"    echo Skipping %CHANNEL% %CONFIG% %PLATFORM%: Beta toolchain&& goto :build-one-skipped
-@if /I "%PLATFORM%" == "android" echo Skipping %CHANNEL% %CONFIG% %PLATFORM%: Build not fully configured&& goto :build-one-skipped
+@if /I "%CHANNEL%"  == "beta"                echo Skipping %CHANNEL% %CONFIG% %PLATFORM%: Beta toolchain&& goto :build-one-skipped
+@if /I "%PLATFORM%" == "android"             echo Skipping %CHANNEL% %CONFIG% %PLATFORM%: Build not fully configured&& goto :build-one-skipped
 @if /I "%PLATFORM%" == "linux" if defined CI echo Skipping %CHANNEL% %CONFIG% %PLATFORM%: Appveyor doesn't have WSL installed&& goto :build-one-skipped
 
 :: Parameters -> Settings
@@ -101,8 +101,7 @@
 @set CARGO_FLAGS= 
 @if /i "%CONFIG%" == "release"   set CARGO_FLAGS=%CARGO_FLAGS% --release
 
-@if /i "%PLATFORM%" == "windows" cargo +%CHANNEL% test             %CARGO_FLAGS% || goto :build-one-error
-@if /i "%PLATFORM%" == "windows" cargo +%CHANNEL% build --examples %CARGO_FLAGS% || goto :build-one-error
+@if /i "%PLATFORM%" == "windows" cargo +%CHANNEL% test --all %CARGO_FLAGS% || goto :build-one-error
 @if /i "%PLATFORM%" == "windows" goto :build-one-successful
 
 @if /i "%PLATFORM%" == "android" rustup toolchain list | findstr default | findstr x86_64 && set "NATIVE_ARCH=x86_64" || set "NATIVE_ARCH=i686"
