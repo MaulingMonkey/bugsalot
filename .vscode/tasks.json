@@ -1,5 +1,19 @@
 {
     "version": "2.0.0",
+    "inputs": [
+        {
+            "id": "channel", "description": "Select a rust toolchain channel",
+            "type": "pickString", "default": "*", "options": ["*", "stable", "beta", "nightly"],
+        },
+        {
+            "id": "config", "description": "Select a build configuration",
+            "type": "pickString", "default": "*", "options": ["*", "debug", "release"],
+        },
+        {
+            "id": "platform", "description": "Select a platform",
+            "type": "pickString", "default": "*", "options": ["*", "windows", "android", "linux", "wasm"],
+        },
+    ],
     "presentation": {
         "clear": true,
     },
@@ -13,18 +27,14 @@
         // Scripts
         { "group": "build", "label": "Install Dependencies",    "command": "scripts\\install.cmd" },
         { "group": "build", "label": "Build/Test Everything",   "command": "scripts\\test.cmd"    },
+        { "group": "build", "label": "Build/Test Custom",       "command": "scripts\\test.cmd ${input:channel} ${input:config} ${input:platform}" },
+        { "group": "build", "label": "Clean",                   "command": "cargo clean", "windows": { "command": "scripts\\clean.cmd" } },
 
         // Tasks for multiple platforms that depend on ambient rust configuration.
         { "group": "build", "label": "cargo check",             "command": "cargo check" },
-        { "group": "build", "label": "cargo clean",             "command": "cargo clean" },
         { "group": "build", "label": "cargo doc",               "command": "cargo doc" },
 
         // Target specific windows builds.
-        { "group": "build", "label": "cargo test --target=x86_64-pc-windows-msvc",             "windows": { "command": "cargo +stable-pc-windows-msvc test --target=x86_64-pc-windows-msvc          " } },
-        { "group": "build", "label": "cargo test --target=x86_64-pc-windows-msvc --release",   "windows": { "command": "cargo +stable-pc-windows-msvc test --target=x86_64-pc-windows-msvc --release" } },
-        { "group": "build", "label": "cargo test --target=i686-pc-windows-msvc",               "windows": { "command": "cargo +stable-pc-windows-msvc test --target=i686-pc-windows-msvc            " } },
-        { "group": "build", "label": "cargo test --target=i686-pc-windows-msvc --release",     "windows": { "command": "cargo +stable-pc-windows-msvc test --target=i686-pc-windows-msvc   --release" } },
-
         { "group": "build", "label": "cargo test --all --target=x86_64-pc-windows-msvc",             "windows": { "command": "cargo +stable-pc-windows-msvc test --all --target=x86_64-pc-windows-msvc          " } },
         { "group": "build", "label": "cargo test --all --target=x86_64-pc-windows-msvc --release",   "windows": { "command": "cargo +stable-pc-windows-msvc test --all --target=x86_64-pc-windows-msvc --release" } },
         { "group": "build", "label": "cargo test --all --target=i686-pc-windows-msvc",               "windows": { "command": "cargo +stable-pc-windows-msvc test --all --target=i686-pc-windows-msvc            " } },
