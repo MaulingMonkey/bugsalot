@@ -5,3 +5,11 @@ build: false
 
 test_script:
   - scripts\test.cmd
+
+cache:
+  #- '%USERPROFILE%\.rustup\toolchains    -> scripts\install.cmd' # 1GB/toolchain, shortish install times
+  #- '%USERPROFILE%\.rustup\update-hashes -> scripts\install.cmd'
+  #- '%USERPROFILE%\.rustup\settings.toml -> scripts\install.cmd'
+  - '%USERPROFILE%\.cargo\bin            -> scripts\install.cmd' # 120MB, very long build times
+  - '%USERPROFILE%\.cargo\.crates.toml   -> scripts\install.cmd'
+  - '%LOCALAPPDATA%\.wasm-pack           -> scripts\install.cmd' #  40MB, very long build times
