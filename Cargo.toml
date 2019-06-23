@@ -9,7 +9,7 @@ repository = "https://github.com/MaulingMonkey/bugsalot"
 readme = "README.md"
 keywords = ["debug", "macros"]
 license = "MIT OR Apache-2.0"
-include = ["src/**/*", "Cargo.toml", "LICENSE-MIT", "LICENSE-APACHE", "Readme.md"]
+include = ["/src/**/*", "/Cargo.toml", "/LICENSE-MIT", "/LICENSE-APACHE", "/Readme.md"]
 
 [lib]
 crate-type = ["rlib", "cdylib"]
