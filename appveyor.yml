@@ -6,6 +6,8 @@ build: false
 test_script:
   - scripts\test.cmd
 
+skip_tags: true
+
 cache:
   #- '%USERPROFILE%\.rustup\toolchains    -> scripts\install.cmd' # 1GB/toolchain, shortish install times
   #- '%USERPROFILE%\.rustup\update-hashes -> scripts\install.cmd'
