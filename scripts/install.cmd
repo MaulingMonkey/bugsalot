@@ -1,11 +1,13 @@
 @setlocal
 @if defined CI echo on
 @if defined CI set "PATH=%USERPROFILE%\.cargo\bin;%PATH%"
+@if defined CI goto :force-install-rustup
 
 @set ERRORS=0
 @if not defined CI where wsl >NUL 2>NUL && goto :cannot-auto-install-wsl
 @where rustup >NUL 2>NUL && goto :skip-install-rustup
 @where curl >NUL 2>NUL || goto :cannot-auto-install-rustup
+:force-install-rustup
 curl -sSf -o "%TEMP%\rustup-init.exe" https://win.rustup.rs
 "%TEMP%\rustup-init.exe" --default-toolchain stable -y
 @set "PATH=%USERPROFILE%\.cargo\bin;%PATH%"
