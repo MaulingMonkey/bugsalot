@@ -1,6 +1,8 @@
 :: Main entry point
 @setlocal
 @if defined CI echo on
+@if defined CI set "PATH=%USERPROFILE%\.cargo\bin;%PATH%"
+
 @set ERRORS=0
 @set BUILDS_LOG="%TEMP%\bugsalot-builds-list.txt"
 @echo Channel    Config     Platform   Result>%BUILDS_LOG%

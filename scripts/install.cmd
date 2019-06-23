@@ -1,5 +1,7 @@
 @setlocal
 @if defined CI echo on
+@if defined CI set "PATH=%USERPROFILE%\.cargo\bin;%PATH%"
+
 @set ERRORS=0
 @if not defined CI where wsl >NUL 2>NUL && goto :cannot-auto-install-wsl
 @where rustup >NUL 2>NUL && goto :skip-install-rustup
