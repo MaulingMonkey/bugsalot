@@ -67,7 +67,7 @@ pub enum State {
 /// if cfg!(any(windows, target_os = "android", target_os = "linux")) {
 ///     // Platform should be supported
 ///     assert_ne!(debugger::state(), debugger::State::Unknown)
-/// } else if cfg!(any(target_arch = "wasm")) {
+/// } else if cfg!(any(target_arch = "wasm32")) {
 ///     // Platform is *not* supported
 ///     assert_eq!(debugger::state(), debugger::State::Unknown)
 /// } else {

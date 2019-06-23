@@ -98,43 +98,31 @@
 
 :: Parameters -> Settings
 
-@rustup toolchain list | findstr default | findstr x86_64 && set NATIVE_ARCH=x86_64|| set NATIVE_ARCH=i686
-@set SHELL_PREFIX= 
-@set SHELL_POSTFIX= 
-@set CARGO_TEST_COMMAND=test
 @set CARGO_FLAGS= 
-
-@if /i "%CONFIG%" == "debug"     echo.>NUL
 @if /i "%CONFIG%" == "release"   set CARGO_FLAGS=%CARGO_FLAGS% --release
 
-@if /i "%PLATFORM%" == "windows" echo.>NUL
-:: Infer --target from toolchain
+@if /i "%PLATFORM%" == "windows" cargo +%CHANNEL% test             %CARGO_FLAGS% || goto :build-one-error
+@if /i "%PLATFORM%" == "windows" cargo +%CHANNEL% build --examples %CARGO_FLAGS% || goto :build-one-error
+@if /i "%PLATFORM%" == "windows" goto :build-one-successful
 
-@if /i "%PLATFORM%" == "android" set CARGO_FLAGS=%CARGO_FLAGS% --target=%NATIVE_ARCH%-linux-android
+@if /i "%PLATFORM%" == "android" rustup toolchain list | findstr default | findstr x86_64 && set "NATIVE_ARCH=x86_64" || set "NATIVE_ARCH=i686"
+@if /i "%PLATFORM%" == "android" cargo +%CHANNEL% test             %CARGO_FLAGS% --target=%NATIVE_ARCH%-linux-android || goto :build-one-error
+@if /i "%PLATFORM%" == "android" cargo +%CHANNEL% build --examples %CARGO_FLAGS% --target=%NATIVE_ARCH%-linux-android || goto :build-one-error
+@if /i "%PLATFORM%" == "android" goto :build-one-successful
 
-@if /i "%PLATFORM%" == "linux"   set "SHELL_PREFIX=%WINDIR%\System32\bash --login -c '"
-@if /i "%PLATFORM%" == "linux"   set "SHELL_POSTFIX='"
-:: Infer --target from toolchain
+@if /i "%PLATFORM%" == "linux" %WINDIR%\System32\bash --login -c 'cargo +%CHANNEL% test             %CARGO_FLAGS%' || goto :build-one-error
+@if /i "%PLATFORM%" == "linux" %WINDIR%\System32\bash --login -c 'cargo +%CHANNEL% build --examples %CARGO_FLAGS%' || goto :build-one-error
+@if /i "%PLATFORM%" == "linux" goto :build-one-successful
 
-@if /i "%PLATFORM%" == "wasm"    set CARGO_FLAGS=%CARGO_FLAGS% --target=wasm32-unknown-unknown
-@if /i "%PLATFORM%" == "wasm"    set CARGO_TEST_COMMAND=web test
-@if /i "%PLATFORM%" == "wasm" if /i "%CHANNEL%" == "nightly" echo WARNING: nightly cargo web test is broken, just building... && set CARGO_TEST_COMMAND=build
+@if /i "%PLATFORM%" == "wasm" call :install-cargo-web                                                  || goto :build-one-error
+@if /i "%PLATFORM%" == "wasm" call :add-chrome-to-path                                                 || goto :build-one-error
+@if /i "%PLATFORM%" == "wasm" cargo +%CHANNEL% web build --target=wasm32-unknown-unknown %CARGO_FLAGS% || goto :build-one-error
+@if /i "%PLATFORM%" == "wasm" goto :build-one-successful
 
-@if /i NOT "%PLATFORM%" == "wasm" goto :skip-add-chrome-to-path
-@where cargo-web >NUL 2>NUL || cargo install cargo-web
-@where chrome >NUL 2>NUL && goto :skip-add-chrome-to-path
-@if exist "%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe" set PATH=%ProgramFiles(x86)%\Google\Chrome\Application\;%PATH% && goto :skip-add-chrome-to-path
-@if exist      "%ProgramFiles%\Google\Chrome\Application\chrome.exe" set      PATH=%ProgramFiles%\Google\Chrome\Application\;%PATH% && goto :skip-add-chrome-to-path
-:skip-add-chrome-to-path
-
-:: Actually build
-
-%SHELL_PREFIX%cargo +%CHANNEL% %CARGO_TEST_COMMAND% %CARGO_FLAGS%%SHELL_POSTFIX% || goto :build-one-error
-%SHELL_PREFIX%cargo +%CHANNEL% build --examples %CARGO_FLAGS%%SHELL_POSTFIX%     || goto :build-one-error
-@goto :build-one-successful
+@echo Unrecognized %%PLATFORM%%: %PLATFORM%
+@goto :build-one-error
 
 :: Exit from :build
-
 :build-one-skipped
 @echo %PAD_CHANNEL% %PAD_CONFIG% %PAD_PLATFORM% skipped>>%BUILDS_LOG%
 @endlocal && set ERRORS=%ERRORS%&& exit /b 0
@@ -146,3 +134,19 @@
 :build-one-error
 @echo %PAD_CHANNEL% %PAD_CONFIG% %PAD_PLATFORM% ERRORS>>%BUILDS_LOG%
 @endlocal && set /A ERRORS=%ERRORS% + 1&& exit /b 1
+
+
+
+:: Utilities
+:add-chrome-to-path
+@where chrome >NUL 2>NUL && exit /b 0
+@if exist "%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe" set "PATH=%ProgramFiles(x86)%\Google\Chrome\Application\;%PATH%" && exit /b 0
+@if exist      "%ProgramFiles%\Google\Chrome\Application\chrome.exe" set      "PATH=%ProgramFiles%\Google\Chrome\Application\;%PATH%" && exit /b 0
+@echo ERROR: Cannot find chrome.exe
+@exit /b 1
+
+:install-cargo-web
+@where cargo-web >NUL 2>NUL && exit /b 0
+cargo install cargo-web && exit /b 0
+@echo ERROR: Cannot find nor install cargo-web
+@exit /b 1
