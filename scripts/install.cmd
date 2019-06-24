@@ -4,7 +4,7 @@
 @if defined CI goto :force-install-rustup
 
 @set ERRORS=0
-@if not defined CI where wsl >NUL 2>NUL && goto :cannot-auto-install-wsl
+@if not defined CI if not exist "%WINDIR%\System32\bash.exe" goto :cannot-auto-install-wsl
 @where rustup >NUL 2>NUL && goto :skip-install-rustup
 @where curl >NUL 2>NUL || goto :cannot-auto-install-rustup
 :force-install-rustup
@@ -23,10 +23,10 @@ if not defined CI rustup target add --toolchain nightly i686-pc-windows-msvc    
 if not defined CI rustup target add --toolchain nightly x86_64-pc-windows-msvc    || set ERRORS=1
                   rustup target add --toolchain nightly wasm32-unknown-unknown    || set ERRORS=1
                   rustup target add --toolchain nightly i686-linux-android        || set ERRORS=1
-if not defined CI wsl curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o rustup-init.sh   || set ERRORS=1
-if not defined CI wsl sh rustup-init.sh --default-toolchain stable -y                               || set ERRORS=1
-if not defined CI wsl rustup toolchain install stable'                                              || set ERRORS=1
-if not defined CI wsl rustup toolchain install nightly'                                             || set ERRORS=1
+if not defined CI "%WINDIR%\System32\bash" --login -c "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o /tmp/rustup-init.sh"  || set ERRORS=1
+if not defined CI "%WINDIR%\System32\bash" --login -c "sh /tmp/rustup-init.sh --default-toolchain stable -y"                              || set ERRORS=1
+if not defined CI "%WINDIR%\System32\bash" --login -c "rustup toolchain install stable"                                                   || set ERRORS=1
+if not defined CI "%WINDIR%\System32\bash" --login -c "rustup toolchain install nightly"                                                 || set ERRORS=1
 @where cargo-web >NUL 2>NUL && goto :skip-install-cargo-web
 cargo install cargo-web || set ERRORS=1
 :skip-install-cargo-web
