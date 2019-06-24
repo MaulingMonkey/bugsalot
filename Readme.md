@@ -5,6 +5,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/nyvlrelifcyjc1l1?svg=true)](https://ci.appveyor.com/project/MaulingMonkey/bugsalot)
 [![Crates.io](https://img.shields.io/crates/v/bugsalot.svg)](https://crates.io/crates/bugsalot)
 ![unsafe: yes](https://img.shields.io/badge/unsafe-yes-yellow.svg)
+![rust: stable](https://img.shields.io/badge/rust-stable-green.svg)
 [![Open issues](https://img.shields.io/github/issues-raw/MaulingMonkey/bugsalot.svg)](https://github.com/MaulingMonkey/bugsalot/issues)
 [![License](https://img.shields.io/crates/l/bugsalot.svg)](https://github.com/MaulingMonkey/bugsalot)
 [![Docs](https://docs.rs/bugsalot/badge.svg)](https://docs.rs/bugsalot/)
