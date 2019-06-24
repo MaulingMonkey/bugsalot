@@ -1,7 +1,11 @@
 // TODO: Module level docs.
 
-mod ffi;
-pub mod debugger;
+// We want to be able to inline all of these via macro:
+//  ffi::win32::DebugBreak();
+//  let _ = ffi::js_sys::eval("debugger;");
+//  ffi::unix::raise(ffi::unix::SIGTRAP);
+#[doc(hidden)] pub mod ffi;
+#[macro_use] pub mod debugger;
 
 #[doc(hidden)] pub mod macro_impl {
     use std::fmt::{self, Debug, Display, Formatter};
@@ -150,33 +154,36 @@ pub mod debugger;
 #[macro_export]
 macro_rules! unwrap {
     ( $e:expr, () ) => {{
+        use $crate::*;
         let unwrap_target = $e;
-        if $crate::macro_impl::DebugUnwrap::can_unwrap(&unwrap_target) {
-            $crate::macro_impl::DebugUnwrap::unwrap_ok(unwrap_target);
+        if macro_impl::DebugUnwrap::can_unwrap(&unwrap_target) {
+            macro_impl::DebugUnwrap::unwrap_ok(unwrap_target);
         } else {
-            $crate::macro_impl::log_unwrap_failed(file!(), line!(), "unwrap! failed", stringify!($e), unwrap_target);
-            $crate::debugger::break_if_attached();
+            macro_impl::log_unwrap_failed(file!(), line!(), "unwrap! failed", stringify!($e), unwrap_target);
+            debugger_break_if_attached!();
         }
     }};
 
     ( $e:expr, $fallback:expr ) => {{
+        use $crate::*;
         let unwrap_target = $e;
-        if $crate::macro_impl::DebugUnwrap::can_unwrap(&unwrap_target) {
-            $crate::macro_impl::DebugUnwrap::unwrap_ok(unwrap_target)
+        if macro_impl::DebugUnwrap::can_unwrap(&unwrap_target) {
+            macro_impl::DebugUnwrap::unwrap_ok(unwrap_target)
         } else {
-            $crate::macro_impl::log_unwrap_failed(file!(), line!(), "unwrap! failed", stringify!($e), unwrap_target);
-            $crate::debugger::break_if_attached();
+            macro_impl::log_unwrap_failed(file!(), line!(), "unwrap! failed", stringify!($e), unwrap_target);
+            debugger_break_if_attached!();
             $fallback
         }
     }};
 
     ( $e:expr ) => {{
+        use $crate::*;
         let unwrap_target = $e;
-        if $crate::macro_impl::DebugUnwrap::can_unwrap(&unwrap_target) {
-            $crate::macro_impl::DebugUnwrap::unwrap_ok(unwrap_target);
+        if macro_impl::DebugUnwrap::can_unwrap(&unwrap_target) {
+            macro_impl::DebugUnwrap::unwrap_ok(unwrap_target);
         } else {
-            $crate::macro_impl::log_unwrap_failed(file!(), line!(), "unwrap! failed", stringify!($e), unwrap_target);
-            $crate::debugger::break_if_attached();
+            macro_impl::log_unwrap_failed(file!(), line!(), "unwrap! failed", stringify!($e), unwrap_target);
+            debugger_break_if_attached!();
         }
     }};
 }
@@ -219,33 +226,36 @@ macro_rules! unwrap {
 #[macro_export]
 macro_rules! expect {
     ( $e:expr, $message:expr, () ) => {{
+        use $crate::*;
         let unwrap_target = $e;
-        if $crate::macro_impl::DebugUnwrap::can_unwrap(&unwrap_target) {
-            $crate::macro_impl::DebugUnwrap::unwrap_ok(unwrap_target);
+        if macro_impl::DebugUnwrap::can_unwrap(&unwrap_target) {
+            macro_impl::DebugUnwrap::unwrap_ok(unwrap_target);
         } else {
             $crate::macro_impl::log_unwrap_failed(file!(), line!(), $message, stringify!($e), unwrap_target);
-            $crate::debugger::break_if_attached();
+            debugger_break_if_attached!();
         }
     }};
 
     ( $e:expr, $message:expr, $err:expr ) => {{
+        use $crate::*;
         let unwrap_target = $e;
-        if $crate::macro_impl::DebugUnwrap::can_unwrap(&unwrap_target) {
-            $crate::macro_impl::DebugUnwrap::unwrap_ok(unwrap_target)
+        if macro_impl::DebugUnwrap::can_unwrap(&unwrap_target) {
+            macro_impl::DebugUnwrap::unwrap_ok(unwrap_target)
         } else {
-            $crate::macro_impl::log_unwrap_failed(file!(), line!(), $message, stringify!($e), unwrap_target);
-            $crate::debugger::break_if_attached();
+            macro_impl::log_unwrap_failed(file!(), line!(), $message, stringify!($e), unwrap_target);
+            debugger_break_if_attached!();
             $err
         }
     }};
 
     ( $e:expr, $message:expr ) => {{
+        use $crate::*;
         let unwrap_target = $e;
-        if $crate::macro_impl::DebugUnwrap::can_unwrap(&unwrap_target) {
-            $crate::macro_impl::DebugUnwrap::unwrap_ok(unwrap_target);
+        if macro_impl::DebugUnwrap::can_unwrap(&unwrap_target) {
+            macro_impl::DebugUnwrap::unwrap_ok(unwrap_target);
         } else {
-            $crate::macro_impl::log_unwrap_failed(file!(), line!(), $message, stringify!($e), unwrap_target);
-            $crate::debugger::break_if_attached();
+            macro_impl::log_unwrap_failed(file!(), line!(), $message, stringify!($e), unwrap_target);
+            debugger_break_if_attached!();
         }
     }};
 }

@@ -6,3 +6,5 @@ pub mod console {
         #[wasm_bindgen(js_namespace = console)] pub fn error(msg: String);
     }
 }
+
+pub use js_sys;

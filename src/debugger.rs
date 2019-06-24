@@ -125,24 +125,21 @@ pub fn state () -> State {
 /// # Examples
 /// 
 /// ```no_run
-/// use bugsalot::debugger;
+/// use bugsalot::debugger_break_if_attached;
 /// 
-/// debugger::break_if_attached();
+/// debugger_break_if_attached!();
 /// ```
-#[inline(always)] // We'd strongly prefer if the debugger showed us the call site, not this function.
-pub fn break_if_attached() {
+#[macro_export]
+macro_rules! debugger_break_if_attached { () => { #[allow(unused_unsafe)] {
     #[cfg(windows)] unsafe {
-        if crate::ffi::win32::IsDebuggerPresent() != 0 {
-            crate::ffi::win32::DebugBreak();
+        if $crate::ffi::win32::IsDebuggerPresent() != 0 {
+            $crate::ffi::win32::DebugBreak();
         }
-        return;
     }
 
     #[cfg(target_arch = "wasm32")] {
         // XXX: Do we maybe want to cache this function somewhere at some point?
-        let _ = js_sys::eval("debugger;");
-        //js_sys::Function::new_no_args("debugger;").call0(&wasm_bindgen::prelude::JsValue::UNDEFINED);
-        return;
+        let _ = $crate::ffi::wasm::js_sys::eval("debugger;");
     }
 
     // For stable, signals tend to work.  Probably.  Maybe.  Although I recall the best signals (e.g. continuable after
@@ -154,14 +151,38 @@ pub fn break_if_attached() {
     // Which is *also* unstable, and thus nightly only, defeating the whole point.  Lame!  Other signals possibly worth
     // using include SIGILL, SIGSTOP, or SIGSEGV, depending on what exact debugger behavior... although SIGTRAP seems
     // like the "correct" signal.  https://en.wikipedia.org/wiki/Signal_(IPC)
-    #[cfg(unix)] {
-        if state() == State::Attached {
-            #[link(name = "c")] extern "C" { fn raise(signum: i32) -> i32; }
-            const SIGTRAP : i32 = 5;
-            unsafe { raise(SIGTRAP); }
+    #[cfg(all(unix, not(target_arch = "wasm32")))] unsafe {
+        if $crate::debugger::state() == $crate::debugger::State::Attached {
+            $crate::ffi::unix::raise($crate::ffi::unix::SIGTRAP);
         }
-        return;
     }
+}}}
+
+/// If a debugger is attached, breakpoint here.
+/// 
+/// # Platforms
+/// 
+/// | Platform  | State | Notes |
+/// | --------- | ----- | ----- |
+/// | Windows   | OK    |       |
+/// | Android   | OK    |       |
+/// | Linux     | OK    | See `state()` for known bugs, signal type might be wrong/suboptimal for debuggers.
+/// | FreeBSD   | ???   | Untested, signal type might be wrong/suboptimal for debuggers
+/// | NetBSD    | ???   | Untested, signal type might be wrong/suboptimal for debuggers
+/// | OS X      | ???   | Untested, signal type might be wrong/suboptimal for debuggers
+/// | iOS       | ???   | Untested, signal type might be wrong/suboptimal for debuggers
+/// | WASM      | OK    |       |
+/// 
+/// # Examples
+/// 
+/// ```no_run
+/// use bugsalot::debugger;
+/// 
+/// debugger::break_if_attached();
+/// ```
+#[inline(always)] // We'd strongly prefer if the debugger showed us the call site, not this function.
+pub fn break_if_attached() {
+    debugger_break_if_attached!()
 }
 
 /// Wait for a debugger to be attached to the current process.
