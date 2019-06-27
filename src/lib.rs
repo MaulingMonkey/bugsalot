@@ -71,11 +71,11 @@ pub mod debugger;
         #[allow(unused_imports)] use crate::ffi::*;
         #[allow(unused_unsafe)] unsafe {
             #[cfg(windows)] win32::OutputDebugStringA(require_nul(message).as_ptr());
-            #[cfg(android)] android::__android_log_write(android::Priority::ERROR, "bugsalot\0".as_ptr(), require_nul(message).as_ptr());
+            #[cfg(target_os = "android")] android::__android_log_write(android::Priority::ERROR, "bugsalot\0".as_ptr(), require_nul(message).as_ptr());
         }
 
         #[cfg(target_arch = "wasm32")] wasm::console::error(require_no_nul(message));
-        #[cfg(all(unix, not(android)))] eprint!("{}", require_no_nul(message));
+        #[cfg(all(unix, not(target_os = "android")))] eprint!("{}", require_no_nul(message));
     }
 
     // TODO: Consider abusing const/static structs to minimize the amount of codegen we need at each call site just to initialize argument registers.
