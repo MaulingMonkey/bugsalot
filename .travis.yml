@@ -26,13 +26,13 @@ matrix:
       os: osx
       rust: stable
     - name: "Android Debug Stable"
-      os: osx
+      os: linux
       rust: stable
       script:
         - rustup target install armv7-linux-androideabi
         - cargo build --examples --verbose --target=armv7-linux-androideabi
     - name: "WASM Debug Stable"
-      os: osx
+      os: linux
       rust: stable
       script:
         - rustup target install wasm32-unknown-unknown
