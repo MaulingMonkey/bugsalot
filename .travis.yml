@@ -47,3 +47,6 @@ matrix:
 
 script:
   - cargo test --verbose --all
+
+before_cache:
+  - rm -rf "$TRAVIS_HOME/.cargo/registry/src"
