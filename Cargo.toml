@@ -8,6 +8,7 @@ documentation = "https://docs.rs/bugsalot/"
 repository = "https://github.com/MaulingMonkey/bugsalot"
 readme = "README.md"
 keywords = ["debug", "macros"]
+categories = ["development-tools::debugging"]
 license = "MIT OR Apache-2.0"
 include = ["/src/**/*", "/Cargo.toml", "/LICENSE-MIT", "/LICENSE-APACHE", "/Readme.md"]
 
