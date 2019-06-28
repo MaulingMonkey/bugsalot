@@ -1,5 +1,11 @@
 language: rust
-cache: cargo
+
+cache:
+  # https://levans.fr/rust_travis_cache.html
+  directories:
+    - $TRAVIS_HOME/.cargo/
+    - $TRAVIS_HOME/.rustup/
+
 matrix:
   allow_failures:
     - os: linux
