@@ -100,7 +100,7 @@
 
 :: Parameters -> Settings
 
-@set CARGO_FLAGS= 
+@set CARGO_FLAGS=--verbose
 @if /i "%CONFIG%" == "release"   set CARGO_FLAGS=%CARGO_FLAGS% --release
 
 @if /i "%PLATFORM%" == "windows" cargo +%CHANNEL% test --all %CARGO_FLAGS% || goto :build-one-error
