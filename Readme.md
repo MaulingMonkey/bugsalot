@@ -21,12 +21,12 @@ but less great for writing stable software.  This crate will attempt to bridge t
 | Platform  | Breakpoints | Debugger  | CI |
 | --------- | ----------- | --------- | -- |
 | Windows   | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![Tests](https://img.shields.io/badge/-tests-green.svg)   |
-| Android   | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![No](https://img.shields.io/badge/-no-red.svg)           |
-| Linux     | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![No](https://img.shields.io/badge/-no-red.svg)           |
+| Android   | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![Build](https://img.shields.io/badge/-build-yellow.svg)  |
+| Linux     | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![Tests](https://img.shields.io/badge/-tests-green.svg)   |
 | FreeBSD   | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![No](https://img.shields.io/badge/-no-red.svg)           |
 | NetBSD    | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![No](https://img.shields.io/badge/-no-red.svg)           |
-| OS X      | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![No](https://img.shields.io/badge/-no-red.svg)           |
-| iOS       | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![No](https://img.shields.io/badge/-no-red.svg)           |
+| OS X      | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![Tests](https://img.shields.io/badge/-tests-green.svg)   |
+| iOS       | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![Build](https://img.shields.io/badge/-build-yellow.svg)  |
 | WASM      | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![N/A](https://img.shields.io/badge/-N/A-red.svg)               | ![Build](https://img.shields.io/badge/-build-yellow.svg)  |
 
 ## Quick Start
