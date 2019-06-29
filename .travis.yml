@@ -38,8 +38,20 @@ matrix:
         - cargo build --all --verbose --target=aarch64-apple-ios
     - name: "Android Debug Stable"
       os: linux
-      rust: stable
+      dist: trusty
+      language: android # https://docs.travis-ci.com/user/languages/android/
+      android:
+        components:
+          #- tools
+          #- platform-tools
+          - build-tools-26.0.2
+          - android-26
+          #- sys-img-x86-android-26 # for eventual unit testing via simulator
       script:
+        - echo travis_fold:start:rustup-install
+        - curl -sSf https://build.travis-ci.org/files/rustup-init.sh | sh -s -- --default-toolchain=stable -y
+        - export PATH=${TRAVIS_HOME}/.cargo/bin:$PATH
+        - echo travis_fold:end:rustup-install
         - rustup target install armv7-linux-androideabi
         - cargo build --all --verbose --target=armv7-linux-androideabi
     - name: "WASM Debug Stable"
