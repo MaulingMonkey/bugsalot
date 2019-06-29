@@ -8,8 +8,7 @@ cache:
 
 matrix:
   allow_failures:
-    - os: linux
-    - os: osx
+    - name: "Android Debug Stable"
     - rust: nightly
   include:
     - name: "Linux Release Stable"
