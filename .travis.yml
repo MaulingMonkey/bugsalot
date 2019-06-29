@@ -50,7 +50,7 @@ matrix:
           #- sys-img-x86-android-26 # for eventual unit testing via simulator
       install:
         - echo travis_fold:start:rustup-install
-        - echo [0K[33;1mInstalling Rust[0m
+        - echo Installing Rust
         - curl -sSf https://build.travis-ci.org/files/rustup-init.sh | sh -s -- --default-toolchain=stable -y
         - export PATH=${TRAVIS_HOME}/.cargo/bin:$PATH
         - export PATH=/usr/local/android-sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
