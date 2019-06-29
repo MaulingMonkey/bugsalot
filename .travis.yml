@@ -46,11 +46,16 @@ matrix:
           #- platform-tools
           - build-tools-26.0.2
           - android-26
+          - ndk-bundle
           #- sys-img-x86-android-26 # for eventual unit testing via simulator
-      script:
+      install:
         - echo travis_fold:start:rustup-install
+        - echo [0K[33;1mInstalling Rust[0m
         - curl -sSf https://build.travis-ci.org/files/rustup-init.sh | sh -s -- --default-toolchain=stable -y
         - export PATH=${TRAVIS_HOME}/.cargo/bin:$PATH
+        - export PATH=/usr/local/android-sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
+        - ls -l /usr/local/android-sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin
+      script:
         - echo travis_fold:end:rustup-install
         - rustup target install armv7-linux-androideabi
         - cargo build --all --verbose --target=armv7-linux-androideabi
@@ -59,7 +64,7 @@ matrix:
       rust: stable
       script:
         - rustup target install wasm32-unknown-unknown
-        - cargo-web version || cargo install cargo-web
+        - cargo-web --version || cargo install cargo-web
         - cargo web build --verbose --target=wasm32-unknown-unknown
 
 script:
