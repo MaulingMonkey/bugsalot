@@ -1,8 +1,8 @@
 # bugsalot
 
-<!-- [![Build Status](https://travis-ci.org/MaulingMonkey/bugsalot.svg)](https://travis-ci.org/MaulingMonkey/bugsalot) -->
+<!-- [![Build status](https://ci.appveyor.com/api/projects/status/nyvlrelifcyjc1l1?svg=true)](https://ci.appveyor.com/project/MaulingMonkey/bugsalot) -->
 ![GitHub](https://img.shields.io/github/stars/MaulingMonkey/bugsalot.svg?label=GitHub&style=social)
-[![Build status](https://ci.appveyor.com/api/projects/status/nyvlrelifcyjc1l1?svg=true)](https://ci.appveyor.com/project/MaulingMonkey/bugsalot)
+[![Build Status](https://travis-ci.org/MaulingMonkey/bugsalot.svg)](https://travis-ci.org/MaulingMonkey/bugsalot)
 [![Crates.io](https://img.shields.io/crates/v/bugsalot.svg)](https://crates.io/crates/bugsalot)
 ![unsafe: yes](https://img.shields.io/badge/unsafe-yes-yellow.svg)
 ![rust: stable](https://img.shields.io/badge/rust-stable-green.svg)
@@ -18,16 +18,17 @@ but less great for writing stable software.  This crate will attempt to bridge t
 
 ## Platforms
 
-| Platform  | Breakpoints | Debugger  | CI |
-| --------- | ----------- | --------- | -- |
-| Windows   | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![Tests](https://img.shields.io/badge/-tests-green.svg)   |
-| Android   | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![Build](https://img.shields.io/badge/-build-yellow.svg)  |
-| Linux     | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![Tests](https://img.shields.io/badge/-tests-green.svg)   |
+| Platform  | Breakpoints | Debugger  | CI | Stable | Beta | Nightly |
+| --------- | ----------- | --------- | -- | ------ | ---- | ------- |
+| Windows   | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![Tests](https://img.shields.io/badge/-tests-green.svg)   | ![Status](https://travis-matrix-badges.herokuapp.com/repos/MaulingMonkey/bugsalot/branches/wip-travis/4) |
+| Android   | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![Build](https://img.shields.io/badge/-build-yellow.svg)  | ![Status](https://travis-matrix-badges.herokuapp.com/repos/MaulingMonkey/bugsalot/branches/wip-travis/9) |
+| Linux     | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![Tests](https://img.shields.io/badge/-tests-green.svg)   | ![Status](https://travis-matrix-badges.herokuapp.com/repos/MaulingMonkey/bugsalot/branches/wip-travis/2) | ![Status](https://travis-matrix-badges.herokuapp.com/repos/MaulingMonkey/bugsalot/branches/wip-travis/3) | ![Status](https://travis-matrix-badges.herokuapp.com/repos/MaulingMonkey/bugsalot/branches/wip-travis/8) |
+| (Release) |                                                                 |                                                                 |                                                           | ![Status](https://travis-matrix-badges.herokuapp.com/repos/MaulingMonkey/bugsalot/branches/wip-travis/1) |
 | FreeBSD   | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![No](https://img.shields.io/badge/-no-red.svg)           |
 | NetBSD    | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![No](https://img.shields.io/badge/-no-red.svg)           |
-| OS X      | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![Tests](https://img.shields.io/badge/-tests-green.svg)   |
-| iOS       | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![Build](https://img.shields.io/badge/-build-yellow.svg)  |
-| WASM      | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![N/A](https://img.shields.io/badge/-N/A-red.svg)               | ![Build](https://img.shields.io/badge/-build-yellow.svg)  |
+| OS X      | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![Tests](https://img.shields.io/badge/-tests-green.svg)   | ![Status](https://travis-matrix-badges.herokuapp.com/repos/MaulingMonkey/bugsalot/branches/wip-travis/5) |
+| iOS       | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![Untested](https://img.shields.io/badge/-untested-yellow.svg)  | ![Build](https://img.shields.io/badge/-build-yellow.svg)  | ![Status](https://travis-matrix-badges.herokuapp.com/repos/MaulingMonkey/bugsalot/branches/wip-travis/6) |
+| WASM      | ![Supported](https://img.shields.io/badge/-supported-green.svg) | ![N/A](https://img.shields.io/badge/-N/A-red.svg)               | ![Build](https://img.shields.io/badge/-build-yellow.svg)  | ![Status](https://travis-matrix-badges.herokuapp.com/repos/MaulingMonkey/bugsalot/branches/wip-travis/7) |
 
 ## Quick Start
 
