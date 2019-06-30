@@ -63,7 +63,9 @@ matrix:
         - ls -l /usr/local/android-sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin
         - rustup target install armv7-linux-androideabi
       script:
+        - pushd scripts/linux-android
         - cargo build --all --verbose --target=armv7-linux-androideabi
+        - popd
     - name: "WASM Debug Stable"
       os: linux
       rust: stable
