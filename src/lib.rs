@@ -110,6 +110,32 @@ pub mod debugger;
             ));
         }
     }
+
+    pub fn log_bug(file: &str, line: u32, msg: impl std::fmt::Display) {
+        output(format!(
+            "{}({}): {}\r\n",
+            file, line, msg
+        ));
+    }
+}
+
+/// # Examples
+/// 
+/// ```no_run
+/// use bugsalot::bug;
+/// 
+/// bug!();
+/// bug!("A simple bug expression, {} allowed");
+/// bug!("A formatting bug expression: {}", "automatically wrapped in format!(...)");
+/// ```
+#[macro_export]
+macro_rules! bug {
+    ( $e:expr ) => {{
+        $crate::macro_impl::log_bug(file!(), line!(), $e);
+        $crate::debugger::break_if_attached();
+    }};
+    ()              => { bug!("bug!()") };
+    ( $($tt:tt)+ )  => { bug!(format!($($tt)+)) };
 }
 
 /// Unwraps Options and Results, logging/breaking on errors, but unlike `a.unwrap()` this is nonfatal and continuable.

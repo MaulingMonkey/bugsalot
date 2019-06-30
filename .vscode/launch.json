@@ -10,6 +10,7 @@
                 "01-unwrap-error",
                 "02-expect-option",
                 "03-expect-error",
+                "04-bug",
             ]
         }
     ],
