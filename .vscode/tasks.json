@@ -42,6 +42,7 @@
 
         // Links
         { "label": "Open appveyor",                             "windows": { "command": "start \"\" https://ci.appveyor.com/project/MaulingMonkey/bugsalot" } },
+        { "label": "Open travis",                               "windows": { "command": "start \"\" https://travis-ci.org/MaulingMonkey/bugsalot" } },
         { "label": "Open github",                               "windows": { "command": "start \"\" https://github.com/MaulingMonkey/bugsalot" } },
         { "label": "Open issues",                               "windows": { "command": "start \"\" https://github.com/MaulingMonkey/bugsalot/issues" } },
         { "label": "Open crates.io",                            "windows": { "command": "start \"\" https://crates.io/crates/bugsalot" } },
