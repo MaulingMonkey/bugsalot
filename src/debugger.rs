@@ -55,7 +55,7 @@ pub enum State {
 /// 
 /// # Examples
 /// 
-/// ```
+/// ```no_run
 /// use bugsalot::debugger;
 /// 
 /// match debugger::state() {
@@ -105,6 +105,27 @@ pub fn state () -> State {
     }
 
     State::Unknown
+}
+
+#[test]
+fn state_examples() {
+    use crate::debugger;
+
+    match debugger::state() {
+        debugger::State::Detatched  => println!("No debugger attached"),
+        debugger::State::Attached   => println!("A debugger is attached"),
+        debugger::State::Unknown    => println!("A debugger may or may not be attached"),
+    }
+
+    if cfg!(any(windows, target_os = "android", target_os = "linux")) {
+        // Platform should be supported
+        assert_ne!(debugger::state(), debugger::State::Unknown)
+    } else if cfg!(any(target_arch = "wasm32")) {
+        // Platform is *not* supported
+        assert_eq!(debugger::state(), debugger::State::Unknown)
+    } else {
+        // Platform might be supported?  Might not?
+    }
 }
 
 /// If a debugger is attached, breakpoint here.
@@ -182,7 +203,7 @@ pub fn break_if_attached() {
 /// 
 /// # Examples
 /// 
-/// ```
+/// ```no_run
 /// use std::time::Duration;
 /// use bugsalot::debugger;
 /// 
@@ -217,6 +238,28 @@ pub fn wait_until_attached<T: Into<Option<std::time::Duration>>> (timeout: T) ->
                 std::thread::sleep(std::time::Duration::from_millis(16)); // Poll at 60hz
             }
         }
+    }
+}
+
+#[test]
+fn wait_until_attached_examples() {
+    use std::time::Duration;
+    use crate::debugger;
+
+    // Wait indefinitely for a debugger to attach.
+    if false {
+        debugger::wait_until_attached(None).expect("state() not implemented on this platform");
+    }
+
+    // Wait up to a timeout for a debugger to attach.
+    if debugger::wait_until_attached(Duration::from_millis(1)).is_ok() {
+        println!("Debugger attached OK!");
+    }
+
+    // Timeout can be an Optional duration as well.
+    match debugger::wait_until_attached(Some(Duration::from_millis(1))) {
+        Ok(()) => println!("Debugger attached OK!"),
+        Err(m) => println!("Debugger didn't attach: {}", m),
     }
 }
 

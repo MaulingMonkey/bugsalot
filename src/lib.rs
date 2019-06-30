@@ -148,7 +148,7 @@ macro_rules! bug {
 /// 
 /// # Examples
 /// 
-/// ```
+/// ```no_run
 /// use bugsalot::unwrap;
 /// 
 /// let a = true;
@@ -209,6 +209,35 @@ macro_rules! unwrap {
     }};
 }
 
+#[test]
+fn unwrap_examples() {
+    use crate::unwrap;
+
+    let a = true;
+    let _ : bool = unwrap!(a, false);
+    let _ : ()   = unwrap!(a, ());
+    let _ : ()   = unwrap!(a);
+    let _ : bool = unwrap!(a, return);
+
+    let a : Option<i32> = Some(42);
+    let _ : i32 = unwrap!(a, 0);
+    let _ : ()  = unwrap!(a, ());
+    let _ : ()  = unwrap!(a);
+    let _ : i32 = unwrap!(a, return);
+
+    let a : Result<i32, &'static str> = Ok(42);
+    let _ : i32 = unwrap!(a, 0);
+    let _ : ()  = unwrap!(a, ());
+    let _ : ()  = unwrap!(a);
+    let _ : i32 = unwrap!(a, return);
+
+    let a : *const i32 = &42;
+    let _ : i32 = unsafe { *unwrap!(a, &12) };
+    let _ : ()  =           unwrap!(a, ());
+    let _ : ()  =           unwrap!(a);
+    let _ : i32 = unsafe { *unwrap!(a, return) };
+}
+
 /// Unwraps Options and Results, logging/breaking on errors, but unlike `a.expect("msg")` this is nonfatal and continuable.
 /// 
 /// Other differences:
@@ -217,7 +246,7 @@ macro_rules! unwrap {
 /// 
 /// # Examples
 /// 
-/// ```
+/// ```no_run
 /// use bugsalot::expect;
 /// 
 /// let a = true;
@@ -276,4 +305,33 @@ macro_rules! expect {
             $crate::debugger::break_if_attached();
         }
     }};
+}
+
+#[test]
+fn expect_examples() {
+    use crate::expect;
+
+    let a = true;
+    let _ : bool = expect!(a, "Couldn't do something", false);
+    let _ : ()   = expect!(a, "Couldn't do something", ());
+    let _ : ()   = expect!(a, "Couldn't do something");
+    let _ : bool = expect!(a, "Couldn't do something", return);
+
+    let a : Option<i32> = Some(42);
+    let _ : i32 = expect!(a, "Couldn't do something", 0);
+    let _ : ()  = expect!(a, "Couldn't do something", ());
+    let _ : ()  = expect!(a, "Couldn't do something");
+    let _ : i32 = expect!(a, "Couldn't do something", return);
+
+    let a : Result<i32, &'static str> = Ok(42);
+    let _ : i32 = expect!(a, "Couldn't do something", 0);
+    let _ : ()  = expect!(a, "Couldn't do something", ());
+    let _ : ()  = expect!(a, "Couldn't do something");
+    let _ : i32 = expect!(a, "Couldn't do something", return);
+
+    let a : *const i32 = &42;
+    let _ : i32 = unsafe { *expect!(a, "Couldn't do something!", &12) };
+    let _ : ()  =           expect!(a, "Couldn't do something!", ());
+    let _ : ()  =           expect!(a,  format!("String {}", 42));
+    let _ : i32 = unsafe { *expect!(a, &format!("String {}", 42), return) };
 }
