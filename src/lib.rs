@@ -119,6 +119,8 @@ pub mod debugger;
     }
 }
 
+/// Reports a bug by logging/breaking.  Unlike `panic!(...)` this is nonfatal and continuable.
+/// 
 /// # Examples
 /// 
 /// ```no_run
