@@ -50,7 +50,7 @@ matrix:
           #- platform-tools
           - build-tools-26.0.2
           - android-26
-          #- sys-img-x86-android-26 # for eventual unit testing via simulator
+          - sys-img-x86-android-26 # for eventual unit testing via simulator
       install:
         - echo travis_fold:start:rustup-install
         - echo Installing Rust
@@ -60,9 +60,10 @@ matrix:
         - echo y | sdkmanager "ndk-bundle"
         #- echo y | sdkmanager "lldb;3.1"
         - export PATH=/usr/local/android-sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
-        - ls -l /usr/local/android-sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin
+        - export PATH=/usr/local/android-sdk/emulator:$PATH
         - rustup target install armv7-linux-androideabi
       script:
+        - emulator -list-avds
         - pushd scripts/linux-android
         - cargo build --all --verbose --target=armv7-linux-androideabi
         - popd
