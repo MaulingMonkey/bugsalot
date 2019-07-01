@@ -1,5 +1,6 @@
 #[repr(i32)]
 #[derive(Clone, Copy, Debug)]
+#[allow(dead_code)]
 pub enum Priority {
     UNKNOWN   = 0,
     DEFAULT   = 1,
