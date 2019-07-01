@@ -52,20 +52,26 @@ matrix:
           - android-26
           - sys-img-x86-android-26 # for eventual unit testing via simulator
       install:
-        - echo travis_fold:start:rustup-install
-        - echo Installing Rust
         - curl -sSf https://build.travis-ci.org/files/rustup-init.sh | sh -s -- --default-toolchain=stable -y
         - export PATH=${TRAVIS_HOME}/.cargo/bin:$PATH
-        - echo travis_fold:end:rustup-install
         - echo y | sdkmanager "ndk-bundle"
         #- echo y | sdkmanager "lldb;3.1"
         - export PATH=/usr/local/android-sdk/ndk-bundle/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
         - export PATH=/usr/local/android-sdk/emulator:$PATH
         - rustup target install armv7-linux-androideabi
+        - echo no | android create avd --force -n test -t android-26 --abi armeabi-v7a -c 100M
+        - emulator -avd test -no-audio -no-window &
+        - android-wait-for-emulator
+        - adb shell input keyevent 82 &
       script:
-        - emulator -list-avds
         - pushd scripts/linux-android
-        - cargo build --all --verbose --target=armv7-linux-androideabi
+        - cargo build --all --verbose --target=i686-linux-androideabi
+        - popd
+        - pushd target/i686-linux-android
+        - export TEST_NAME=$(ls -t1 debug | grep 'bugsalot-' | head -n 1)
+        - adb push $TEST_NAME /data/local/tmp/bugsalot_unit_tests
+        - adb shell chmod 755 /data/local/tmp/bugsalot_unit_tests
+        - adb shell /data/local/tmp/bugsalot_unit_tests
         - popd
     - name: "WASM Debug Stable"
       os: linux
