@@ -9,6 +9,7 @@
 [![Open issues](https://img.shields.io/github/issues-raw/MaulingMonkey/bugsalot.svg)](https://github.com/MaulingMonkey/bugsalot/issues)
 [![License](https://img.shields.io/crates/l/bugsalot.svg)](https://github.com/MaulingMonkey/bugsalot)
 [![Docs](https://docs.rs/bugsalot/badge.svg)](https://docs.rs/bugsalot/)
+[![dependency status](https://deps.rs/repo/github/MaulingMonkey/bugsalot/status.svg)](https://deps.rs/repo/github/MaulingMonkey/bugsalot)
 
 This crate provides macros and methods for bug wrangling.  Specifically, I want all the advantages of crashing (bug
 reports, ease of debugging, etc.) with none of the drawbacks (lost progress, pissed off gamers, etc).  Rust's error
