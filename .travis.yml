@@ -2,7 +2,8 @@ language: rust
 
 branches:
   except:
-    - /^v\d+\.\d+\.\d+$/ # Exclude tags in the style of v1.2.3
+    - /^v\d+\.\d+\.\d+$/  # Exclude tags in the style of v1.2.3
+    - /^dead\/.+$/        # Exclude dead/* branches from CI, they're dead for a reason
 
 cache:
   # https://levans.fr/rust_travis_cache.html
