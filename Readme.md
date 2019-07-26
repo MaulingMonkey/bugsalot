@@ -5,7 +5,7 @@
 [![Build Status](https://travis-ci.org/MaulingMonkey/bugsalot.svg)](https://travis-ci.org/MaulingMonkey/bugsalot)
 [![Crates.io](https://img.shields.io/crates/v/bugsalot.svg)](https://crates.io/crates/bugsalot)
 ![unsafe: yes](https://img.shields.io/badge/unsafe-yes-yellow.svg)
-![rust: stable](https://img.shields.io/badge/rust-stable-green.svg)
+![rust: 1.36.0+](https://img.shields.io/badge/rust-1.36.0%2B-green.svg)
 [![Open issues](https://img.shields.io/github/issues-raw/MaulingMonkey/bugsalot.svg)](https://github.com/MaulingMonkey/bugsalot/issues)
 [![License](https://img.shields.io/crates/l/bugsalot.svg)](https://github.com/MaulingMonkey/bugsalot)
 [![Docs](https://docs.rs/bugsalot/badge.svg)](https://docs.rs/bugsalot/)

@@ -14,32 +14,15 @@ matrix:
   allow_failures:
     - rust: nightly
   include:
-    - name: "Linux Release Stable"
-      os: linux
-      rust: stable
-      script: ["cargo test --verbose --release"]
-    - name: "Linux Debug Stable"
-      os: linux
-      rust: stable
-    - name: "Linux Debug Beta"
-      os: linux
-      rust: beta
-    - name: "Linux Debug Nightly"
-      os: linux
-      rust: nightly
-    - name: "Windows Debug Stable"
-      os: windows
-      rust: stable
-    - name: "OS X Debug Stable"
-      os: osx
-      rust: stable
-    - name: "iOS Debug Stable"
-      os: osx
-      rust: stable
-      install:
-        - rustup target install aarch64-apple-ios
-      script:
-        - cargo build --all --verbose --target=aarch64-apple-ios
+    - { name: "Linux Release Stable", os: linux,    rust: stable, script: ["cargo test --verbose --release"] }
+    - { name: "Linux Debug 1.36.0",   os: linux,    rust: 1.36.0  }
+    - { name: "Linux Debug Stable",   os: linux,    rust: stable  }
+    - { name: "Linux Debug Beta",     os: linux,    rust: beta    }
+    - { name: "Linux Debug Nightly",  os: linux,    rust: nightly }
+    - { name: "Windows Debug Stable", os: windows,  rust: stable  }
+    - { name: "OS X Debug Stable",    os: osx,      rust: stable  }
+    - { name: "iOS Debug Stable",     os: osx,      rust: stable, script: ["cargo build --all --verbose --target=aarch64-apple-ios"], install: ["rustup target install aarch64-apple-ios"] },
+
     - name: "Android Debug Stable"
       os: linux
       dist: trusty
@@ -60,6 +43,7 @@ matrix:
         - pushd scripts/linux-android
         - cargo build --all --verbose --target=armv7-linux-androideabi
         - popd
+
     - name: "WASM Debug Stable"
       os: linux
       rust: stable
