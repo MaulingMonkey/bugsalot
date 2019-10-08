@@ -136,8 +136,8 @@ macro_rules! bug {
         $crate::macro_impl::log_bug(file!(), line!(), $e);
         $crate::debugger::break_if_attached();
     }};
-    ()              => { bug!("bug!()") };
-    ( $($tt:tt)+ )  => { bug!(format!($($tt)+)) };
+    ()              => { $crate::bug!("bug!()") };
+    ( $($tt:tt)+ )  => { $crate::bug!(format!($($tt)+)) };
 }
 
 /// Unwraps Options and Results, logging/breaking on errors, but unlike `a.unwrap()` this is nonfatal and continuable.
