@@ -13,7 +13,7 @@ license = "MIT OR Apache-2.0"
 include = ["/src/**/*", "/Cargo.toml", "/LICENSE-MIT", "/LICENSE-APACHE", "/Readme.md"]
 
 [lib]
-crate-type = ["rlib", "cdylib"]
+crate-type = ["lib", "cdylib"]
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = "0.2"
