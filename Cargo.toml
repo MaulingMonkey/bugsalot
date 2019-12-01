@@ -1,6 +1,6 @@
 [package]
 name = "bugsalot"
-version = "0.1.7"
+version = "0.1.8"
 authors = ["MaulingMonkey <git@maulingmonkey.com>"]
 edition = "2018"
 description = "Debugging macros and APIs for shipping stable codebases."
