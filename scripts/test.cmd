@@ -106,7 +106,7 @@
 
 :: Build
 
-@if /i "%PLATFORM%" == "windows" cargo +%CHANNEL% test --all %CARGO_FLAGS% || goto :build-one-error
+@if /i "%PLATFORM%" == "windows" call :echo-command cargo +%CHANNEL% test --all %CARGO_FLAGS% || goto :build-one-error
 @if /i "%PLATFORM%" == "windows" goto :build-one-successful
 
 
@@ -149,9 +149,11 @@ adb -s %EMULATOR_DEVICE% shell /data/local/tmp/bugsalot_unit_tests || set ANDROI
 
 
 
-@if /i "%PLATFORM%" == "wasm" call :install-cargo-web                                                  || goto :build-one-error
-@if /i "%PLATFORM%" == "wasm" call :add-chrome-to-path                                                 || goto :build-one-error
-@if /i "%PLATFORM%" == "wasm" cargo +%CHANNEL% web build --target=wasm32-unknown-unknown %CARGO_FLAGS% || goto :build-one-error
+@if /i "%PLATFORM%" == "wasm" call :install-cargo-web                                                                                               || goto :build-one-error
+@if /i "%PLATFORM%" == "wasm" call :add-chrome-to-path                                                                                              || goto :build-one-error
+@if /i "%PLATFORM%" == "wasm" call :echo-command cargo +%CHANNEL% web build --target=wasm32-unknown-unknown                          %CARGO_FLAGS%  || goto :build-one-error
+@if /i "%PLATFORM%" == "wasm" call :echo-command cargo +%CHANNEL% web build --target=wasm32-unknown-unknown --features=wasm-bindgen  %CARGO_FLAGS%  || goto :build-one-error
+@if /i "%PLATFORM%" == "wasm" call :echo-command cargo +%CHANNEL% web build --target=wasm32-unknown-unknown --features=stdweb        %CARGO_FLAGS%  || goto :build-one-error
 @if /i "%PLATFORM%" == "wasm" goto :build-one-successful
 
 
@@ -187,3 +189,7 @@ adb -s %EMULATOR_DEVICE% shell /data/local/tmp/bugsalot_unit_tests || set ANDROI
 cargo install cargo-web && exit /b 0
 @echo ERROR: Cannot find nor install cargo-web
 @exit /b 1
+
+:echo-command
+%*
+@exit /b %ERRORLEVEL%

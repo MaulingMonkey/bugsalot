@@ -159,10 +159,16 @@ pub fn break_if_attached() {
         return;
     }
 
-    #[cfg(target_arch = "wasm32")] {
+    #[cfg(all(target_arch = "wasm32", feature = "wasm-bindgen"))] {
         // XXX: Do we maybe want to cache this function somewhere at some point?
         let _ = js_sys::eval("debugger;");
         //js_sys::Function::new_no_args("debugger;").call0(&wasm_bindgen::prelude::JsValue::UNDEFINED);
+        return;
+    }
+
+    #[cfg(all(target_arch = "wasm32", feature = "stdweb"))] {
+        use stdweb0::js;
+        js! { debugger; };
         return;
     }
 
