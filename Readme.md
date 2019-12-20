@@ -40,7 +40,7 @@ bugsalot = "0.1"
 ```
 
 Write your code (see [examples](examples) and [documentation](https://docs.rs/bugsalot/) for more code):
-```rs
+```rust
 use bugsalot::debugger;
 
 fn main() {
