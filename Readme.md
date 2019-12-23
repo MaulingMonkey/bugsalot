@@ -36,7 +36,7 @@ but less great for writing stable software.  This crate will attempt to bridge t
 Add to your cargo.toml:
 ```toml
 [dependencies]
-bugsalot = "0.1"
+bugsalot = "0.2"
 ```
 
 Write your code (see [examples](examples) and [documentation](https://docs.rs/bugsalot/) for more code):
