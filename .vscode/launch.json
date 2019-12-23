@@ -11,6 +11,7 @@
                 "02-expect-option",
                 "03-expect-error",
                 "04-bug",
+                "05-debug",
             ]
         }
     ],

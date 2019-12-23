@@ -56,18 +56,18 @@ pub mod debugger;
     }
 
     #[allow(dead_code)]
-    fn require_nul (mut message: String) -> String {
+    fn require_nul(mut message: String) -> String {
         if !message.ends_with("\0") { message.push('\0'); }
         message
     }
 
     #[allow(dead_code)]
-    fn require_no_nul (mut message: String) -> String {
+    fn require_no_nul(mut message: String) -> String {
         if message.ends_with("\0") { message.pop(); }
         message
     }
 
-    fn output (message: String) {
+    pub fn output(message: String) {
         #[allow(unused_imports)] use crate::ffi::*;
         #[allow(unused_unsafe)] unsafe {
             #[cfg(windows)] win32::OutputDebugStringA(require_nul(message).as_ptr());
@@ -138,6 +138,94 @@ macro_rules! bug {
     }};
     ()              => { $crate::bug!("bug!()") };
     ( $($tt:tt)+ )  => { $crate::bug!(format!($($tt)+)) };
+}
+
+/// Log (part of) a line to standard debugging channels.  **Prefer [debugln!]**
+/// 
+/// Messages should terminate in newlines.  Failure to do so will result in inconsistent behavior between debug message
+/// viewers, as several of them treat each message as a complete package and effectively terminate them with newlines
+/// even if you don't, but a few *don't*, and will instead effectively combine lines.
+/// 
+/// For example, in [DebugView] on Windows, `debug!("A"); debug!("B");` will display something like:
+/// 
+/// ```text
+/// 33  616.02484131 [12584] A
+/// 34  616.02490234 [12584] B
+/// ```
+/// 
+/// But in [Visual Studio]'s Output tab, or [Visual Studio Code]'s Debug Console, it will instead display something like:
+/// 
+/// ```text
+/// AB
+/// ```
+/// 
+/// # Examples
+/// 
+/// ```
+/// use bugsalot::debug;
+/// 
+/// debug!("Print stuff\n");
+/// debug!("Print more stuff: {} {} {}\n", 1, "2", 3.0f32);
+/// ```
+/// 
+/// # Platforms
+/// 
+/// | platform  | mechanism | notes and caveats |
+/// | --------- | --------- | ----------------- |
+/// | Android   | [__android_log_write](https://developer.android.com/ndk/reference/group/logging#group___logging_1ga32a7173b092ec978b50490bd12ee523b)  | View in [ADB Logcat].
+/// | WASM      | [console.log](https://developer.mozilla.org/en-US/docs/Web/API/Console/log)                                                           | View in Developer Tools ([Firefox], [Chrome]).
+/// | Windows   | [OutputDebugStringA](https://docs.microsoft.com/en-us/windows/win32/api/debugapi/nf-debugapi-outputdebugstringa)                      | **Buffer size capped.**  View in [VS]'s Ouput tab, [VSC]'s Debug Console, [DebugView](https://docs.microsoft.com/en-us/sysinternals/downloads/debugview), etc.
+/// | \*nix     | stderr                                                                                                                                | May intermingle with other error reporting, subject to change.
+/// 
+/// [debugln!]:             macro.debugln.html
+/// [ADB Logcat]:           https://developer.android.com/studio/command-line/logcat
+/// [Firefox]:              https://developer.mozilla.org/en-US/docs/Tools/Web_Console
+/// [Chrome]:               https://developers.google.com/web/tools/chrome-devtools/console#view
+/// [DebugView]:            https://docs.microsoft.com/en-us/sysinternals/downloads/debugview
+/// [VS]:                   https://visualstudio.microsoft.com/
+/// [Visual Studio]:        https://visualstudio.microsoft.com/
+/// [VSC]:                  https://code.visualstudio.com/
+/// [Visual Studio Code]:   https://code.visualstudio.com/
+#[macro_export]
+macro_rules! debug {
+    ( $format:literal $($tt:tt)* )  => { $crate::macro_impl::output(format!($format $($tt)*)) };
+}
+
+/// Log a line to standard debugging channels.
+/// 
+/// # Examples
+/// 
+/// ```
+/// use bugsalot::debugln;
+/// 
+/// debugln!();
+/// debugln!("Print stuff");
+/// debugln!("Print more stuff: {} {} {}", 1, "2", 3.0f32);
+/// ```
+/// 
+/// # Platforms
+/// 
+/// | platform  | mechanism | notes and caveats |
+/// | --------- | --------- | ----------------- |
+/// | Android   | [__android_log_write](https://developer.android.com/ndk/reference/group/logging#group___logging_1ga32a7173b092ec978b50490bd12ee523b)  | View in [ADB Logcat].
+/// | WASM      | [console.log](https://developer.mozilla.org/en-US/docs/Web/API/Console/log)                                                           | View in Developer Tools ([Firefox], [Chrome]).
+/// | Windows   | [OutputDebugStringA](https://docs.microsoft.com/en-us/windows/win32/api/debugapi/nf-debugapi-outputdebugstringa)                      | **Buffer size capped.**  View in [VS]'s Ouput tab, [VSC]'s Debug Console, [DebugView](https://docs.microsoft.com/en-us/sysinternals/downloads/debugview), etc.
+/// | \*nix     | stderr                                                                                                                                | May intermingle with other error reporting, subject to change.
+/// 
+/// [debugln!]:             macro.debugln.html
+/// [ADB Logcat]:           https://developer.android.com/studio/command-line/logcat
+/// [Firefox]:              https://developer.mozilla.org/en-US/docs/Tools/Web_Console
+/// [Chrome]:               https://developers.google.com/web/tools/chrome-devtools/console#view
+/// [DebugView]:            https://docs.microsoft.com/en-us/sysinternals/downloads/debugview
+/// [VS]:                   https://visualstudio.microsoft.com/
+/// [VSC]:                  https://code.visualstudio.com/
+#[macro_export]
+macro_rules! debugln {
+    ()                              => { $crate::debugln!("") };
+    ( $format:literal $($tt:tt)* )  => {
+        #[cfg(not(windows))] { $crate::macro_impl::output(format!(concat!($format, "\n\0") $($tt)*))      }
+        #[cfg(    windows )] { $crate::macro_impl::output(format!(concat!($format, "\r\n\0") $($tt)*))    }
+    };
 }
 
 /// Unwraps Options and Results, logging/breaking on errors, but unlike `a.unwrap()` this is nonfatal and continuable.
