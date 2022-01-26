@@ -120,12 +120,12 @@ pub mod debugger;
 }
 
 /// Reports a bug by logging/breaking.  Unlike `panic!(...)` this is nonfatal and continuable.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```no_run
 /// use bugsalot::bug;
-/// 
+///
 /// bug!();
 /// bug!("A simple bug expression, {} allowed");
 /// bug!("A formatting bug expression: {}", "automatically wrapped in format!(...)");
@@ -141,42 +141,42 @@ macro_rules! bug {
 }
 
 /// Log (part of) a line to standard debugging channels.  **Prefer [debugln!]**
-/// 
+///
 /// Messages should terminate in newlines.  Failure to do so will result in inconsistent behavior between debug message
 /// viewers, as several of them treat each message as a complete package and effectively terminate them with newlines
 /// even if you don't, but a few *don't*, and will instead effectively combine lines.
-/// 
+///
 /// For example, in [DebugView] on Windows, `debug!("A"); debug!("B");` will display something like:
-/// 
+///
 /// ```text
 /// 33  616.02484131 [12584] A
 /// 34  616.02490234 [12584] B
 /// ```
-/// 
+///
 /// But in [Visual Studio]'s Output tab, or [Visual Studio Code]'s Debug Console, it will instead display something like:
-/// 
+///
 /// ```text
 /// AB
 /// ```
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use bugsalot::debug;
-/// 
+///
 /// debug!("Print stuff\n");
 /// debug!("Print more stuff: {} {} {}\n", 1, "2", 3.0f32);
 /// ```
-/// 
+///
 /// # Platforms
-/// 
+///
 /// | platform  | mechanism | notes and caveats |
 /// | --------- | --------- | ----------------- |
 /// | Android   | [__android_log_write](https://developer.android.com/ndk/reference/group/logging#group___logging_1ga32a7173b092ec978b50490bd12ee523b)  | View in [ADB Logcat].
 /// | WASM      | [console.log](https://developer.mozilla.org/en-US/docs/Web/API/Console/log)                                                           | View in Developer Tools ([Firefox], [Chrome]).
 /// | Windows   | [OutputDebugStringA](https://docs.microsoft.com/en-us/windows/win32/api/debugapi/nf-debugapi-outputdebugstringa)                      | **Buffer size capped.**  View in [VS]'s Ouput tab, [VSC]'s Debug Console, [DebugView](https://docs.microsoft.com/en-us/sysinternals/downloads/debugview), etc.
 /// | \*nix     | stderr                                                                                                                                | May intermingle with other error reporting, subject to change.
-/// 
+///
 /// [debugln!]:             macro.debugln.html
 /// [ADB Logcat]:           https://developer.android.com/studio/command-line/logcat
 /// [Firefox]:              https://developer.mozilla.org/en-US/docs/Tools/Web_Console
@@ -192,26 +192,26 @@ macro_rules! debug {
 }
 
 /// Log a line to standard debugging channels.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use bugsalot::debugln;
-/// 
+///
 /// debugln!();
 /// debugln!("Print stuff");
 /// debugln!("Print more stuff: {} {} {}", 1, "2", 3.0f32);
 /// ```
-/// 
+///
 /// # Platforms
-/// 
+///
 /// | platform  | mechanism | notes and caveats |
 /// | --------- | --------- | ----------------- |
 /// | Android   | [__android_log_write](https://developer.android.com/ndk/reference/group/logging#group___logging_1ga32a7173b092ec978b50490bd12ee523b)  | View in [ADB Logcat].
 /// | WASM      | [console.log](https://developer.mozilla.org/en-US/docs/Web/API/Console/log)                                                           | View in Developer Tools ([Firefox], [Chrome]).
 /// | Windows   | [OutputDebugStringA](https://docs.microsoft.com/en-us/windows/win32/api/debugapi/nf-debugapi-outputdebugstringa)                      | **Buffer size capped.**  View in [VS]'s Ouput tab, [VSC]'s Debug Console, [DebugView](https://docs.microsoft.com/en-us/sysinternals/downloads/debugview), etc.
 /// | \*nix     | stderr                                                                                                                                | May intermingle with other error reporting, subject to change.
-/// 
+///
 /// [debugln!]:             macro.debugln.html
 /// [ADB Logcat]:           https://developer.android.com/studio/command-line/logcat
 /// [Firefox]:              https://developer.mozilla.org/en-US/docs/Tools/Web_Console
@@ -229,34 +229,34 @@ macro_rules! debugln {
 }
 
 /// Unwraps Options and Results, logging/breaking on errors, but unlike `a.unwrap()` this is nonfatal and continuable.
-/// 
+///
 /// Other differences:
 /// * Works on booleans
 /// * Should breakpoint directly on the line of the unwrap!
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```no_run
 /// use bugsalot::unwrap;
-/// 
+///
 /// let a = true;
 /// let _ : bool = unwrap!(a, false);
 /// let _ : ()   = unwrap!(a, ());
 /// let _ : ()   = unwrap!(a);
 /// let _ : bool = unwrap!(a, return);
-/// 
+///
 /// let a : Option<i32> = Some(42);
 /// let _ : i32 = unwrap!(a, 0);
 /// let _ : ()  = unwrap!(a, ());
 /// let _ : ()  = unwrap!(a);
 /// let _ : i32 = unwrap!(a, return);
-/// 
+///
 /// let a : Result<i32, &'static str> = Ok(42);
 /// let _ : i32 = unwrap!(a, 0);
 /// let _ : ()  = unwrap!(a, ());
 /// let _ : ()  = unwrap!(a);
 /// let _ : i32 = unwrap!(a, return);
-/// 
+///
 /// let a : *const i32 = &42;
 /// let _ : i32 = unsafe { *unwrap!(a, &12) };
 /// let _ : ()  =           unwrap!(a, ());
@@ -327,34 +327,34 @@ fn unwrap_examples() {
 }
 
 /// Unwraps Options and Results, logging/breaking on errors, but unlike `a.expect("msg")` this is nonfatal and continuable.
-/// 
+///
 /// Other differences:
 /// * Works on booleans
 /// * Should breakpoint directly on the line of the unwrap!
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```no_run
 /// use bugsalot::expect;
-/// 
+///
 /// let a = true;
 /// let _ : bool = expect!(a, "Couldn't do something", false);
 /// let _ : ()   = expect!(a, "Couldn't do something", ());
 /// let _ : ()   = expect!(a, "Couldn't do something");
 /// let _ : bool = expect!(a, "Couldn't do something", return);
-/// 
+///
 /// let a : Option<i32> = Some(42);
 /// let _ : i32 = expect!(a, "Couldn't do something", 0);
 /// let _ : ()  = expect!(a, "Couldn't do something", ());
 /// let _ : ()  = expect!(a, "Couldn't do something");
 /// let _ : i32 = expect!(a, "Couldn't do something", return);
-/// 
+///
 /// let a : Result<i32, &'static str> = Ok(42);
 /// let _ : i32 = expect!(a, "Couldn't do something", 0);
 /// let _ : ()  = expect!(a, "Couldn't do something", ());
 /// let _ : ()  = expect!(a, "Couldn't do something");
 /// let _ : i32 = expect!(a, "Couldn't do something", return);
-/// 
+///
 /// let a : *const i32 = &42;
 /// let _ : i32 = unsafe { *expect!(a, "Couldn't do something!", &12) };
 /// let _ : ()  =           expect!(a, "Couldn't do something!", ());

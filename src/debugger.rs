@@ -1,7 +1,7 @@
 //! APIs for interacting with native debuggers for the current process.
-//! 
+//!
 //! This includes:
-//! 
+//!
 //! * [Visual Studio](https://visualstudio.microsoft.com/vs/)
 //! * [VS Code](https://code.visualstudio.com/)
 //! * [WinDBG](https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/debugger-download-tools)
@@ -9,9 +9,9 @@
 //! * [ADPlus](https://docs.microsoft.com/en-us/windows-hardware/drivers/debugger/adplus)
 //! * [GDB](https://www.gnu.org/software/gdb/)
 //! * [LLDB](https://lldb.llvm.org/)
-//! 
+//!
 //! This is *not* intended to include:
-//! 
+//!
 //! * Script-only debuggers
 //! * GPU/shader debuggers
 //! * Java-only debuggers like `jdb`
@@ -32,9 +32,9 @@ pub enum State {
 }
 
 /// What is the current state of the debugger, with regards to this process?  Attached?  Detatched?  Unknown?
-/// 
+///
 /// # Platforms
-/// 
+///
 /// | Platform  | State | Notes |
 /// | --------- | ----- | ----- |
 /// | Windows   | OK    |       |
@@ -45,25 +45,25 @@ pub enum State {
 /// | OS X      | OK?   | Untested
 /// | iOS       | OK?   | Untested
 /// | WASM      | N/A   | Returns `Unknown`.  We could try to detect if devtools are open, but that's a browser specific mess, and you can usually get away with just invoking `debugger;`.  That said, pull requests welcome.
-/// 
+///
 /// # KNOWN BUGS:
 ///
 /// * On some versions of Windows Subsystem for Linux, `TracerPid` may incorrectly be 0 when a debugger is attached,
 ///   leading us to incorrectly report `Detatched`.  If you encounter such a version, please
 ///   [file an issue](https://github.com/MaulingMonkey/bugsalot/issues/new) that includes the result of
 ///   `cat /proc/version`, so I can add version detection to report `Unknown` for affected versions.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```no_run
 /// use bugsalot::debugger;
-/// 
+///
 /// match debugger::state() {
 ///     debugger::State::Detatched  => println!("No debugger attached"),
 ///     debugger::State::Attached   => println!("A debugger is attached"),
 ///     debugger::State::Unknown    => println!("A debugger may or may not be attached"),
 /// }
-/// 
+///
 /// if cfg!(any(windows, target_os = "android", target_os = "linux")) {
 ///     // Platform should be supported
 ///     assert_ne!(debugger::state(), debugger::State::Unknown)
@@ -84,7 +84,7 @@ pub fn state () -> State {
     // "/proc/self/status" may contain a TracerPid: [debugger process id] line, which is nonzero if there is a debugger.
     // Works on android, linux, and possibly on various BSDs and OS X.
     #[cfg(unix)] {
-        // The following `/proc/version`s of WSL correctly report `TracerPid`: 
+        // The following `/proc/version`s of WSL correctly report `TracerPid`:
         // Linux version 4.4.0-18362-Microsoft (Microsoft@Microsoft.com) (gcc version 5.4.0 (GCC) ) #1-Microsoft Mon Mar 18 12:02:00 PST 2019
         // XXX: Do we maybe want to cache the result in a thread_local and/or static somewhere?
         if let Ok(file) = std::fs::File::open("/proc/self/status") {
@@ -129,9 +129,9 @@ fn state_examples() {
 }
 
 /// If a debugger is attached, breakpoint here.
-/// 
+///
 /// # Platforms
-/// 
+///
 /// | Platform  | State | Notes |
 /// | --------- | ----- | ----- |
 /// | Windows   | OK    |       |
@@ -142,12 +142,12 @@ fn state_examples() {
 /// | OS X      | ???   | Untested, signal type might be wrong/suboptimal for debuggers
 /// | iOS       | ???   | Untested, signal type might be wrong/suboptimal for debuggers
 /// | WASM      | OK    |       |
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```no_run
 /// use bugsalot::debugger;
-/// 
+///
 /// debugger::break_if_attached();
 /// ```
 #[inline(always)] // We'd strongly prefer if the debugger showed us the call site, not this function.
@@ -193,9 +193,9 @@ pub fn break_if_attached() {
 
 /// Wait for a debugger to be attached to the current process.
 /// Will return an `Err("...")` if the debugger state is unknown, or waiting for the debugger times out.
-/// 
+///
 /// # Platforms
-/// 
+///
 /// | Platform  | State | Notes |
 /// | --------- | ----- | ----- |
 /// | Windows   | OK    |       |
@@ -206,23 +206,23 @@ pub fn break_if_attached() {
 /// | OS X      | ???   | Untested, signal type might be wrong/suboptimal for debuggers
 /// | iOS       | ???   | Untested, signal type might be wrong/suboptimal for debuggers
 /// | WASM      | OK    |       |
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```no_run
 /// use std::time::Duration;
 /// use bugsalot::debugger;
-/// 
+///
 /// // Wait indefinitely for a debugger to attach.
 /// # if false {
 /// debugger::wait_until_attached(None).expect("state() not implemented on this platform");
 /// # }
-/// 
+///
 /// // Wait up to a timeout for a debugger to attach.
 /// if debugger::wait_until_attached(Duration::from_millis(1)).is_ok() {
 ///     println!("Debugger attached OK!");
 /// }
-/// 
+///
 /// // Timeout can be an Optional duration as well.
 /// match debugger::wait_until_attached(Some(Duration::from_millis(1))) {
 ///     Ok(()) => println!("Debugger attached OK!"),

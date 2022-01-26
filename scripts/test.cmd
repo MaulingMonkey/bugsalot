@@ -99,7 +99,7 @@
 
 :: Parameters -> Settings
 
-@set CARGO_FLAGS= 
+@set "CARGO_FLAGS= "
 @if /i "%CONFIG%" == "release"   set CARGO_FLAGS=%CARGO_FLAGS% --release
 
 
