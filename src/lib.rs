@@ -13,7 +13,7 @@ pub mod debugger;
     impl<'a> Debug for MaybeDebugToDebug<'a> { fn fmt(&self, f: &mut Formatter) -> fmt::Result { self.0.fmt(f) } }
 
     pub trait DebugUnwrap<O, E : fmt::Debug> {
-        /// Returns (pass, fail, format_error)
+        /// Returns (pass, fail, pass_parens, fail_parens)
         fn get_pass_fail_strs(&self) -> (&'static str, &'static str, bool, bool);
         fn can_unwrap(&self) -> bool;
         fn unwrap_ok(self) -> O;
@@ -23,8 +23,8 @@ pub mod debugger;
     impl DebugUnwrap<bool, bool> for bool {
         fn get_pass_fail_strs(&self) -> (&'static str, &'static str, bool, bool) { ("true", "false", false, false) }
         fn can_unwrap(&self) -> bool { *self }
-        fn unwrap_ok(self) -> bool { false }
-        fn unwrap_err(self) -> bool { false }
+        fn unwrap_ok(self) -> bool { self }
+        fn unwrap_err(self) -> bool { self }
     }
 
     impl<T> DebugUnwrap<*const T, *const T> for *const T {
@@ -297,7 +297,7 @@ macro_rules! unwrap {
     }};
 }
 
-#[test]
+#[test] // done this way so we can run tests on android: https://github.com/MaulingMonkey/bugsalot/issues/22
 fn unwrap_examples() {
     use crate::unwrap;
 
@@ -324,6 +324,16 @@ fn unwrap_examples() {
     let _ : ()  =           unwrap!(a, ());
     let _ : ()  =           unwrap!(a);
     let _ : i32 = unsafe { *unwrap!(a, return) };
+}
+
+#[test]
+fn unwrap_bool_results() {
+    use crate::unwrap;
+
+    assert_eq!(unwrap!(false, false), false);
+    assert_eq!(unwrap!(false, true), true);
+    assert_eq!(unwrap!(true, false), true);
+    assert_eq!(unwrap!(true, true), true);
 }
 
 /// Unwraps Options and Results, logging/breaking on errors, but unlike `a.expect("msg")` this is nonfatal and continuable.
@@ -395,7 +405,7 @@ macro_rules! expect {
     }};
 }
 
-#[test]
+#[test] // done this way so we can run tests on android: https://github.com/MaulingMonkey/bugsalot/issues/22
 fn expect_examples() {
     use crate::expect;
 
