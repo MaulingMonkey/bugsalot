@@ -75,15 +75,50 @@ pub enum State {
 /// }
 /// ```
 #[allow(unreachable_code)]
-pub fn state () -> State {
+pub fn state() -> State {
     // For windows based platforms, just rely on Kernel32
-    #[cfg(windows)] unsafe {
-        return if crate::ffi::win32::IsDebuggerPresent() == 0 { State::Detatched } else { State::Attached }
+    #[cfg(windows)]
+    unsafe {
+        return if crate::ffi::win32::IsDebuggerPresent() == 0 {
+            State::Detatched
+        } else {
+            State::Attached
+        };
+    }
+
+    // OSX/iOS variant
+    #[cfg(any(target_os = "ios", target_os = "macos"))]
+    {
+        use libc::{c_int, c_void, getpid, size_t, sysctl, CTL_KERN, KERN_PROC, KERN_PROC_PID};
+        use std::convert::TryInto;
+        const P_TRACED: u32 = 0x00800;
+        unsafe {
+            let mut info = [0u8; 648]; // struct kinfo_proc   info;
+            let mut size: size_t = info.len();
+            let mut mib: [c_int; 4] = [CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()];
+            let ret = sysctl(
+                mib.as_mut_ptr(),
+                4,
+                info.as_mut_ptr() as *mut c_void,
+                &mut size as *mut size_t,
+                core::ptr::null_mut(),
+                0,
+            );
+            if ret == 0 {
+                // info.kp_proc.p_flag
+                if (u32::from_le_bytes(info[32..36].try_into().unwrap()) & P_TRACED) != 0 {
+                    return State::Attached;
+                } else {
+                    return State::Detatched;
+                }
+            }
+        }
     }
 
     // "/proc/self/status" may contain a TracerPid: [debugger process id] line, which is nonzero if there is a debugger.
-    // Works on android, linux, and possibly on various BSDs and OS X.
-    #[cfg(unix)] {
+    // Works on Android, and Linux
+    #[cfg(any(target_os = "android", target_os = "linux"))]
+    {
         // The following `/proc/version`s of WSL correctly report `TracerPid`:
         // Linux version 4.4.0-18362-Microsoft (Microsoft@Microsoft.com) (gcc version 5.4.0 (GCC) ) #1-Microsoft Mon Mar 18 12:02:00 PST 2019
         // XXX: Do we maybe want to cache the result in a thread_local and/or static somewhere?
@@ -95,9 +130,9 @@ pub fn state () -> State {
                     let line = line.trim();
                     if line.starts_with("TracerPid:") {
                         return match [" 0", "\t0", ":0"].iter().any(|zero| line.ends_with(zero)) {
-                            true  => State::Detatched,
+                            true => State::Detatched,
                             false => State::Attached,
-                        }
+                        };
                     }
                 }
             }
@@ -112,9 +147,9 @@ fn state_examples() {
     use crate::debugger;
 
     match debugger::state() {
-        debugger::State::Detatched  => println!("No debugger attached"),
-        debugger::State::Attached   => println!("A debugger is attached"),
-        debugger::State::Unknown    => println!("A debugger may or may not be attached"),
+        debugger::State::Detatched => println!("No debugger attached"),
+        debugger::State::Attached => println!("A debugger is attached"),
+        debugger::State::Unknown => println!("A debugger may or may not be attached"),
     }
 
     if cfg!(any(windows, target_os = "android", target_os = "linux")) {
@@ -152,21 +187,24 @@ fn state_examples() {
 /// ```
 #[inline(always)] // We'd strongly prefer if the debugger showed us the call site, not this function.
 pub fn break_if_attached() {
-    #[cfg(windows)] unsafe {
+    #[cfg(windows)]
+    unsafe {
         if crate::ffi::win32::IsDebuggerPresent() != 0 {
             crate::ffi::win32::DebugBreak();
         }
         return;
     }
 
-    #[cfg(all(target_arch = "wasm32", feature = "wasm-bindgen"))] {
+    #[cfg(all(target_arch = "wasm32", feature = "wasm-bindgen"))]
+    {
         // XXX: Do we maybe want to cache this function somewhere at some point?
         let _ = js_sys::eval("debugger;");
         //js_sys::Function::new_no_args("debugger;").call0(&wasm_bindgen::prelude::JsValue::UNDEFINED);
         return;
     }
 
-    #[cfg(all(target_arch = "wasm32", feature = "stdweb"))] {
+    #[cfg(all(target_arch = "wasm32", feature = "stdweb"))]
+    {
         use stdweb0::js;
         js! { debugger; };
         return;
@@ -181,11 +219,17 @@ pub fn break_if_attached() {
     // Which is *also* unstable, and thus nightly only, defeating the whole point.  Lame!  Other signals possibly worth
     // using include SIGILL, SIGSTOP, or SIGSEGV, depending on what exact debugger behavior... although SIGTRAP seems
     // like the "correct" signal.  https://en.wikipedia.org/wiki/Signal_(IPC)
-    #[cfg(unix)] {
+    #[cfg(unix)]
+    {
         if state() == State::Attached {
-            #[link(name = "c")] extern "C" { fn raise(signum: i32) -> i32; }
-            const SIGTRAP : i32 = 5;
-            unsafe { raise(SIGTRAP); }
+            #[link(name = "c")]
+            extern "C" {
+                fn raise(signum: i32) -> i32;
+            }
+            const SIGTRAP: i32 = 5;
+            unsafe {
+                raise(SIGTRAP);
+            }
         }
         return;
     }
@@ -229,12 +273,14 @@ pub fn break_if_attached() {
 ///     Err(m) => println!("Debugger didn't attach: {}", m),
 /// }
 /// ```
-pub fn wait_until_attached<T: Into<Option<std::time::Duration>>> (timeout: T) -> Result<(), &'static str> {
+pub fn wait_until_attached<T: Into<Option<std::time::Duration>>>(
+    timeout: T,
+) -> Result<(), &'static str> {
     let timeout = timeout.into().map(|dur| std::time::Instant::now() + dur);
     loop {
         match state() {
             State::Attached => return Ok(()),
-            State::Unknown  => return Err("Debugger state is unknown, cannot wait_until_attached"),
+            State::Unknown => return Err("Debugger state is unknown, cannot wait_until_attached"),
             State::Detatched => {
                 if let Some(timeout) = timeout {
                     if std::time::Instant::now() >= timeout {
@@ -249,8 +295,8 @@ pub fn wait_until_attached<T: Into<Option<std::time::Duration>>> (timeout: T) ->
 
 #[test]
 fn wait_until_attached_examples() {
-    use std::time::Duration;
     use crate::debugger;
+    use std::time::Duration;
 
     // Wait indefinitely for a debugger to attach.
     if false {
